@@ -21,7 +21,7 @@ class InputBox extends Component{
         // Alert.alert("Message Sent" + this.state.text);
         this.firebaseRef = this.props.firebaseRef;
 
-        this.firebaseRef.push({ text : this.state.text });
+        this.firebaseRef.push({ text : this.state.text, username : this.props.username});
         // Alert.alert("Message Pushed");
 
         this.setState({ text : "" });

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {ScrollView, Text, View, KeyboardAvoidingView, Platform} from 'react-native';
+import {ScrollView, Text, View, KeyboardAvoidingView, Platform, AsyncStorage} from 'react-native';
 import {Header} from 'react-native-elements';
 
 import firebase from '../firebase/firebase';
@@ -10,11 +10,21 @@ import InputBox from './InputBox';
 class chat extends Component{
     
     state = {
+        username : "",
         msg : [],
         data : {}
     }
 
+    setUserName = async () =>{
+        let username = await AsyncStorage.getItem('username');
+        
+        this.setState({ username : username });
+        console.log("Username set to ", username);
+    }
+
     componentWillMount = () => {
+
+        this.setUserName();
 
         if(this.props.globalChat == true)
         {
@@ -50,30 +60,60 @@ class chat extends Component{
 
         return this.state.msg.map((item, i) => {
 
-                                                // return <Text 
-                                                //     style={{ 
-                                                //             backgroundColor:'skyblue',
-                                                //             width:'75%',
-                                                //             padding:5,
-                                                //             borderRadius:50,
-                                                //             marginBottom:5,
-                                                //             marginRight : '25%'
-                                                //         }} 
-                                                //     key={i}>
-                                                //         {item["text"]}
-                                                // </Text> 
+                                                if(item.username == this.state.username)          
+                                                    return (<View key={i} style={{ flex:1, flexDirection:'row-reverse' }}>
+                                                                {/*<Text 
+                                                                    style={{ 
+                                                                        backgroundColor:'#517fa4',
+                                                                        width:'20%',
+                                                                        padding:5,
+                                                                        borderRadius:50,
+                                                                        marginBottom:5
+                                                                        }} 
+                                                                >
+                                                                    {item["username"]}
+                                                                    </Text>*/}
+                                                                <Text 
+                                                                    style={{ 
+                                                                        backgroundColor:'skyblue',
+                                                                        width:'60%',
+                                                                        padding:5,
+                                                                        borderRadius:50,
+                                                                        marginBottom:5
+                                                                        }} 
+                                                                >
+                                                                    {item["text"]}
+                                                                </Text>
+                                                            </View>
+                                                            );
 
-                                                return <Text 
-                                                    style={{ 
-                                                            backgroundColor:'skyblue',
-                                                            width:'75%',
-                                                            padding:5,
-                                                            borderRadius:50,
-                                                            marginBottom:5
-                                                        }} 
-                                                    key={i}>
-                                                        {item["text"]}
-                                                </Text>
+                                                else
+                                                    return (<View key={i} style={{ flex:1, flexDirection:'row' }}>
+                                                                <Text 
+                                                                    style={{ 
+                                                                        backgroundColor:'#517fa4',
+                                                                        width:'20%',
+                                                                        padding:5,
+                                                                        borderRadius:50,
+                                                                        marginBottom:5
+                                                                        }} 
+                                                                >
+                                                                    {item["username"]}
+                                                                </Text>
+                                                                <Text 
+                                                                    style={{ 
+                                                                        backgroundColor:'skyblue',
+                                                                        width:'60%',
+                                                                        padding:5,
+                                                                        borderRadius:50,
+                                                                        marginBottom:5
+                                                                        }} 
+                                                                >
+                                                                    {item["text"]}
+                                                                </Text>
+
+                                                            </View>
+                                                            );
                                                 }
                                     )
 
@@ -98,7 +138,7 @@ class chat extends Component{
                     >
                         {this.renderMsg()}
                     </ScrollView>
-                    <InputBox firebaseRef={this.firebaseRef}/>
+                    <InputBox username={this.state.username} firebaseRef={this.firebaseRef}/>
                 </KeyboardAvoidingView>
                 );
     }

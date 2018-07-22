@@ -1,12 +1,26 @@
 import React, {Component} from 'react';
-import {View, Text, TextInput, Alert} from 'react-native';
+import {View, Text, TextInput, Alert, AsyncStorage} from 'react-native';
 import {Header} from 'react-native-elements';
 import firebase from '../firebase/firebase';
 
 class CreateChatRoom extends Component{
 
     state = {
-        text : ''
+        text : '',
+        username : ""
+    }
+
+    setUserName = async () =>{
+        let username = await AsyncStorage.getItem('username');
+        
+        this.setState({ username : username });
+        console.log("[CreateChatRoom]Username set to ", username);
+    }
+
+    componentWillMount = () => {
+
+        this.setUserName();
+    
     }
 
     createChatRoom = () => {
@@ -21,8 +35,10 @@ class CreateChatRoom extends Component{
             else
             { 
                 // console.log('Not Exists');
-                this.firebaseRef.child(this.state.text).update({ createdBy : '' });
+                this.firebaseRef.child(this.state.text).update({ createdBy : this.state.username });
                 Alert.alert('Room Created');
+                this.setState({text : ""});
+                this.props.navigation.navigate('chatRooms');
             }
         });
 
